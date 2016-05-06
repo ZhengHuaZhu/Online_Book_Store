@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:t="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <ui:composition template="./masterLayout.xhtml">
+        <ui:define name="content">
+            <h:head>
+                <link rel="stylesheet" type="text/css" href="resources/css/style.css"/>
+                <link rel="stylesheet" type="text/css" href="resources/css/bootstrap.min.css"/>
+                <link rel="stylesheet" type="text/css" href="resources/css/bootstrap-theme.min.css"/>
+            </h:head>
+            <h:body>
+                <div class="container">
+                    <div class="row centered-form">
+                        <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2" style="padding-left: 10%; width: 40%;">
+                            <div class="panel panel-default" >
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">#{msgs.Login}</h3>
+                                </div>
+                                <div class = "panel-body">
+                                    <h:form id="loginForm">                                        
+                                        <div class="form-group">
+                                            <h:inputText class="form-control input-sm" 
+                                                         value="#{loginInfo.email}" 	 
+                                                         id="email"	 
+                                                         required="true" 	 
+                                                         requiredMessage="#{msgs.Required}"
+                                                         t:placeholder="#{msgs.Email}">
+                                                <f:validator validatorId="emailValidator" />
+                                             <f:ajax execute="@this" render="emailmessage" />
+
+                                            </h:inputText>
+                                            <h:message id="emailmessage" class="required-text" for="email" />                                             
+                                        </div>
+                                        <div class="form-group">
+                                            <h:inputSecret class="form-control input-sm" 
+                                                           value="#{loginInfo.password}"
+                                                           id="password"
+                                                           required="true" 
+                                                           requiredMessage="#{msgs.Required}"
+                                                           t:placeholder="#{msgs.Password}" >  
+                                                      <f:ajax execute="@this" render="passwordmessage" />                                    
+                                            </h:inputSecret>                                          	 
+                                            <h:message id="passwordmessage" class="required-text" for="password" />                                             	 
+                                        </div>    
+                                        <p:commandButton class="btn btn-info btn-block"  id="authentication" value="#{msgs.Login}"  action="#{login.login}" update="loginForm"/>
+
+                                        <div>
+                                            <h:outputText value="#{msgs.InvalidCredential}" rendered="#{login.invalidCredential}" style="color:red;" />
+                                        </div>                                         
+                                    </h:form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               
+                <c:if test="#{not empty login.user}">
+                    <div class="container-fluid">
+                        <br/>
+                        <h1><h:outputText style=" color: white; padding-left: 20%;" value="#{msgs.Error404Login}"/></h1>
+                    </div>
+                </c:if>
+            </h:body>	 
+        </ui:define>	 
+    </ui:composition>
+</html>

@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- Authors: Zheng Hua Zhu, Julien Comtois -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:body>
+        <ui:composition template="./masterLayout.xhtml">
+<!--            <ui:define name="metadata">
+                <f:metadata>
+                    <f:viewParam name="searchCriteria" value="#{searchQuery.criteria}"/>
+                    <f:viewParam name="searchKeyword" value="#{searchQuery.keyword}"/>
+                </f:metadata>
+            </ui:define>-->
+            <ui:define name="content">
+                <div class="container-fluid">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                #{searchQuery.books.size()} search results for all books' "#{searchQuery.criteria}" having "#{searchQuery.keyword}"
+                            </h3>
+                        </div>
+                        <h:form>   
+                            <p:dataScroller value="#{searchQuery.books}" var="books" chunkSize="10" mode="inline" scrollHeight="900" >
+                                <h:panelGrid class="list-group-item" columns="2" columnClasses="logo,detail">
+                                    <h:commandLink action="bookProfile">
+                                        <f:setPropertyActionListener target="#{inventoryAction.bookId}" value="#{books.bookId}"/>
+                                        <p:graphicImage name="images/bookCovers/#{books.isbn}.jpg" style="width: 150px; max-width: 150px;" /> 
+                                    </h:commandLink>
+                                    <p:outputPanel style="padding-left: 40px;">
+                                        <h:panelGrid columns="2" cellpadding="5">
+                                            <h:outputText value="#{msgs.Title}:" />
+                                            <h:commandLink action="bookProfile" value="#{books.title}" style="margin-left: 20px; font-weight: bold; color: darkmagenta" >
+                                                <f:setPropertyActionListener target="#{inventoryAction.bookId}" value="#{books.bookId}"/>
+                                            </h:commandLink>
+                                            <h:outputText value="#{msgs.Author}:" />
+                                            <h:link outcome="searchResults">
+                                                <h:outputText value="#{books.author}" style="margin-left: 20px; font-weight: bold"/>
+                                            </h:link>
+                                            <h:outputText value="#{msgs.Publisher}:" />
+                                            <h:outputText value="#{books.publisher}" style="margin-left: 20px; font-weight: bold"/>
+                                            <h:outputText value="#{msgs.Genre}:" />
+                                            <h:outputText value="#{books.genre}" style="margin-left: 20px; font-weight: bold"/>
+                                            <h:outputText value="#{msgs.Price}:" />
+                                            <h:outputText value="$#{books.displayPrice}" style="margin-left: 20px; font-weight: bold; color: darkred;"/> 
+                                        </h:panelGrid>
+                                    </p:outputPanel>  
+                                </h:panelGrid>
+                            </p:dataScroller>
+                        </h:form>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

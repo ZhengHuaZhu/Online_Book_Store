@@ -1,0 +1,7 @@
+com\group2\bambootemple\persistence\OrderDAOImplTest.class
+com\group2\bambootemple\persistence\TaxDAOImplTest.class
+com\group2\bambootemple\persistence\SurveyDAOImplTest.class
+com\group2\bambootemple\persistence\ReviewDAOImplTest.class
+com\group2\bambootemple\persistence\InventoryDAOImplTest.class
+com\group2\bambootemple\persistence\ItemDAOImplTest.class
+com\group2\bambootemple\persistence\UserDAOImpTest.class

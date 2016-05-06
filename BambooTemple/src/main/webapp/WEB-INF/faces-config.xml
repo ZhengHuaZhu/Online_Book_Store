@@ -1,0 +1,22 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Required configuration file for JSF. The tools of the IDE fill in most
+     of this file. Here you can see a reference locale that will be used
+     to determine which message bundle to use.
+-->
+<faces-config version="2.2"
+              xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+
+    <application>
+        <locale-config>
+            <default-locale>en_ca</default-locale>
+            <supported-locale>fr_ca</supported-locale>
+        </locale-config>
+        <resource-bundle>
+            <base-name>com.group2.bambootemple.bundles.messages</base-name>
+            <var>msgs</var>
+        </resource-bundle>
+        <message-bundle>com.group2.bambootemple.bundles.ApplicationMessages</message-bundle>
+    </application>
+</faces-config>

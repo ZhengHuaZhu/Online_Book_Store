@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" 
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:t="http://xmlns.jcp.org/jsf/passthrough" 
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="./masterLayout.xhtml">
+        <ui:define name="content">
+            <h:head>
+                <link rel="stylesheet" type="text/css" href="resources/css/style.css"/>
+                <link rel="stylesheet" type="text/css" href="resources/css/bootstrap.min.css"/>
+                <link rel="stylesheet" type="text/css" href="resources/css/bootstrap-theme.min.css"/>
+            </h:head>
+            <h:body>
+                <div class="container-fluid">
+                    <div class="row centered-form">
+                        <div class="panel panel-default" style="width: 600px; margin-left: 25%">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">#{msgs.Registration}</h3>	 
+                            </div>	 
+                            <div class="panel-body" >     
+                                <h:form id="registration" role="form">	 
+                                    <div class="row">	 
+                                        <div class="col-xs-6 col-sm-6 col-md-6">	 
+                                            <div class="form-group">	 
+                                                <h:inputText 	 
+                                                    class="form-control input-sm floatlabel" 	 
+                                                    value="#{registration.fname}" 	 
+                                                    id ="fname"	 
+                                                    required="true"	 
+                                                    requiredMessage="#{msgs.FNReq}"	 
+                                                    validatorMessage="#{msgs.FNVal}"	 
+                                                    t:placeholder="#{msgs.FirstName}"> 
+                                                    <f:ajax execute="@this" event="keyup" render="fnameMsgs" />
+                                                </h:inputText>
+                                                <h:messages class="required-text" id="fnameMsgs" for="fname" />  
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6">
+
+                                            <div class="form-group">
+
+                                                <h:inputText class="form-control input-sm" 
+                                                             value="#{registration.lname}" 
+                                                             id="lname"
+                                                             required="true" 
+                                                             requiredMessage="#{msgs.LNReq}"	 
+                                                             validatorMessage="#{msgs.LNVal}" 
+                                                             t:placeholder="#{msgs.LastName}" > 
+                                                    <f:ajax execute="@this" event="keyup" render="lnameMsgs" />                                                    
+                                                </h:inputText>                                                    	 
+                                                <h:messages id="lnameMsgs" class="required-text" for="lname" />  	 
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <h:inputText class="form-control input-sm" 
+                                                     value="#{registration.email}"
+                                                     id="email"
+                                                     required="true" 
+                                                     requiredMessage="#{msgs.EmailReq}"
+                                                     validatorMessage="#{msgs.InvalidEmail}" 
+                                                     t:placeholder="#{msgs.Email}">
+                                            <f:validator validatorId="emailValidator" />
+                                            <f:ajax execute="@this" event="keyup" render="emailMsgs" />
+                                        </h:inputText>	 
+                                        <h:messages id="emailMsgs" class="required-text" for="email" />
+
+                                    </div>	 
+                                    <div class="form-group">	 
+                                        <h:inputSecret class="form-control input-sm" 
+                                                       value="#{registration.password}"	                                                            
+                                                       id="password"	 
+                                                       required="true" 	 
+                                                       requiredMessage="#{msgs.PassReq}"	 
+                                                       validatorMessage="#{msgs.PassVal}"                                                           
+                                                       t:placeholder="#{msgs.Password}">
+                                            <f:validateLength minimum="5" maximum="15" for="password"></f:validateLength>
+                                            <f:ajax execute="@this" event="keyup" render="passwordMsgs" />
+                                        </h:inputSecret>	 
+                                        <h:message id="passwordMsgs" class="required-text" for="password" />  	 
+                                    </div>	 
+                                    <div class="form-group">	 
+                                        <h:inputText class="form-control input-sm"	 
+                                                     value="#{registration.company}"	 
+                                                     id="company"
+                                                     t:placeholder="#{msgs.Company}" />	 
+                                    </div>
+                                    <div class="form-group">	 
+                                        <h:inputText class="form-control input-sm" t:placeholder="#{msgs.Address1}"	 
+                                                     value="#{registration.address1}" 
+                                                     id="address1"
+                                                     required="true" 
+                                                     requiredMessage="#{msgs.AdressReq}" >
+                                            <f:ajax execute="@this" event="keyup" render="addressMsgs" />
+                                        </h:inputText>	 
+                                        <h:message id="addressMsgs" class="required-text" for="address1"/>	 
+                                    </div>	 
+                                    <div class="form-group">	 
+                                        <h:inputText id="address2" class="form-control input-sm" 
+                                                     t:placeholder="#{msgs.Address2}"	 
+                                                     value="#{registration.address2}">	 
+                                        </h:inputText>	 
+                                    </div>
+                                    <div class="row">	 
+                                        <div class="col-xs-6 col-sm-6 col-md-6">	 
+                                            <div class="form-group">	                                                     
+                                                <h:inputText id="city" class="form-control input-sm floatlabel" t:placeholder="#{msgs.City}"                                                             	 
+                                                             value="#{registration.city}" 	 
+                                                             required="true" 	 
+                                                             requiredMessage="#{msgs.CityReq}">
+                                                    <f:ajax execute="@this" event="keyup" render="cityMsgs" />
+                                                </h:inputText>                                                          
+                                                <h:message id="cityMsgs" class="required-text" for="city"/>	 
+                                            </div>	 
+                                        </div>	 
+                                        <div class="col-xs-6 col-sm-6 col-md-6">	 
+                                            <div class="form-group">	 
+                                                <h:inputText id="province" class="form-control input-sm" t:placeholder="#{msgs.Province}"	 
+                                                             value="#{registration.province}"   
+                                                             required="true" 	 
+                                                             requiredMessage="#{msgs.ProvinceReq}" >
+                                                    <f:validator validatorId="provincialCodeValidator"/>
+                                                    <f:ajax execute="@this" event="keyup" render="provinceMsgs" />
+                                                </h:inputText >	 
+                                                <h:message id="provinceMsgs" class="required-text" for="province"/>	 
+                                            </div>	 
+                                        </div>	 
+                                    </div>
+                                    <div class="row">	 
+                                        <div class="col-xs-6 col-sm-6 col-md-6">	 
+                                            <div class="form-group">
+                                                <h:inputText id="postalCode" class="form-control input-sm floatlabel" t:placeholder="#{msgs.PostalCode}"	 
+                                                             value="#{registration.postalcode}"
+                                                             required="true"	 
+                                                             requiredMessage="#{msgs.PostalReq}" >
+                                                    <f:validator validatorId="postalCodeValidator"/>
+                                                    <f:ajax execute="@this" event="keyup" render="pcMsgs" />
+                                                </h:inputText >	 
+                                                <h:message id="pcMsgs" class="required-text" for="postalCode"/>	 
+                                            </div>	 
+                                        </div>	 
+                                        <div class="col-xs-6 col-sm-6 col-md-6">	 
+                                            <div class="form-group">	 
+                                                <h:inputText id="country" class="form-control input-sm" t:placeholder="#{msgs.Country}" 	 
+                                                             value="#{registration.country}"	 
+                                                             required="true" 	 
+                                                             requiredMessage="#{msgs.CountryReq}" >
+                                                    <f:ajax execute="@this" event="keyup" render="countryMsgs" />
+                                                </h:inputText> 
+                                                <h:message id="countryMsgs" class="required-text" for="country"/>	 
+                                            </div>	 
+                                        </div>	 
+                                    </div>
+                                    <div class="row">	 
+                                        <div class="col-xs-6 col-sm-6 col-md-6">	                                                 
+                                            <div class="form-group">	 
+                                                <h:inputText id="homePhone" class="form-control input-sm floatlabel" t:placeholder="#{msgs.HomePhone}"/>	 
+                                            </div>
+                                        </div>
+                                        <div class="col-xs-6 col-sm-6 col-md-6">	 
+                                            <div class="form-group">
+                                                <h:inputText id="cellPhone" class="form-control input-sm" t:placeholder="#{msgs.CellPhone}"
+                                                             value="#{registration.cellphone}"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p:commandButton class="btn btn-info btn-block" 	 
+                                                     value="#{msgs.Register}"  	 
+                                                     action="#{registration.register()}" update="registration">
+                                        <f:ajax execute="@form"  render="existingemail" />
+                                    </p:commandButton>
+                                    <div>	 
+                                        <br></br>	 
+                                        <h:outputText id="existingemail" value="#{msgs.ExistingUser}" rendered="#{registration.existingUser}" style="color:red;" />	 
+                                    </div>	 
+                                </h:form>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </h:body>   	 
+        </ui:define>	 
+    </ui:composition>
+</html>

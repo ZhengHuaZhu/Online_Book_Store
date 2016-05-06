@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+
+    </h:head>
+    <h:body>
+
+        <ui:composition template="./managementTemplate.xhtml">            
+            <ui:define name="content">
+                <div class="container-fluid">
+                    <div class = "panel panel-primary">
+                        <div class = "panel-heading">
+                            <h3 class = "panel-title">#{msgs.ManageAds}</h3>
+                        </div>
+                        <div class = "panel-body">
+                            <div>
+                                <h:form>
+                                    <div class="container-fluid">
+                                        <div class="row">
+                                            <div class="col-sm-4">
+                                                <p:inputText value="#{searchQuery.keyword}">
+                                                    <p:ajax event="keyup" update=":adTable" />
+                                                </p:inputText>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <p:commandButton value="#{msgs.Submit}" update=":adTable" />
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <p:commandButton value="#{msgs.AddNewAd}" action="#{selectedAd.setAdToNew()}" update=":addNewAd" oncomplete="PF('addNewAd').show()" />                                                
+                                            </div>
+                                        </div>                                    
+                                    </div>
+                                </h:form>
+                            </div>
+                            <br/>
+                            <div>
+                                <p:dataTable id="adTable" var="ad" value="#{adDAOImpl.findBySource()}">
+                                    <p:column colspan="2" headerText="#{msgs.Source}">
+                                        <h:outputText value="#{ad.source}" />
+                                    </p:column>
+
+                                    <p:column  colspan="4" headerText="#{msgs.URL}">
+                                        <h:outputText value="#{ad.url}" />
+                                    </p:column>                                    
+                                    
+                                    <p:column  colspan="2" headerText="#{msgs.Status}">
+                                        <h:outputText value="#{ad.isInEffect==0?msgs.NotActive:msgs.Active}" />
+                                    </p:column>
+
+                                    <p:column colspan="6" headerText="#{msgs.Controls}">
+                                        <div class="container-fluid">                                            
+                                            <div class="row">
+                                                <h:form>
+                                                    <div class="col-sm-4"><p:commandButton value="#{msgs.DetailsEdit}" action="#{selectedAd.setAd(ad)}" update=":detail" oncomplete="PF('detail').show()" /></div>
+                                                    <div class="col-sm-4"><p:commandButton value="#{msgs.ChangeStatus}" action="#{adDAOImpl.changeStatus(ad)}" update=":adTable"/></div>
+                                                    <div class="col-sm-4"><p:commandButton value="#{msgs.Delete}" action="#{adDAOImpl.delete(ad.ad_id)}" update=":adTable"/></div>                                                    
+                                                </h:form>                                                                                                    
+                                            </div>
+                                        </div>
+                                    </p:column>                                    
+                                </p:dataTable>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+
+                <p:dialog id="detail" widgetVar="detail" modal="true">
+                    <h:form id="VeiwDetailEditAd" >
+                        <h:panelGrid columns="2" styleClass="centered-panel" >
+                            <p:panel id="primepanel" header="#{msgs.ViewDetailsAndEdit}" >
+
+                                <h:panelGrid columns="3" cellpadding="1" border="0" >                                   
+
+                                                             
+                                    <p:outputLabel for="source" value="#{msgs.Source}"/>
+                                    <p:inputText id="source" label="#{msgs.Source}"
+                                                 value="#{selectedAd.ad.source}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}" >
+                                        <f:validateLength maximum="20" />
+                                    </p:inputText>
+                                    <p:message for="source" style="color:red" />
+                                    
+                                    <p:outputLabel for="url" value="#{msgs.URL}"/>
+                                    <p:inputText id="url" label="#{msgs.URL}"
+                                                 value="#{selectedAd.ad.url}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}" >
+                                        <f:validateLength maximum="255" />
+                                    </p:inputText>
+                                    <p:message for="url" style="color:red" />                                  
+                                    
+                                    <h:inputHidden value="#{selectedAd.ad.ad_id}"></h:inputHidden>
+                                    
+                                    <p:commandButton value="#{msgs.Submit}"
+                                                     action="#{adDAOImpl.update(selectedAd.ad)}"        
+                                                     oncomplete="handleDetailDialogSubmit(xhr, status, args)"
+                                                     update=":detail :adTable"                                             
+                                                     />
+
+                                </h:panelGrid>                                
+
+                            </p:panel>
+                        </h:panelGrid>
+                    </h:form>
+                </p:dialog>
+                
+                <script type="text/javascript">
+                    function handleDetailDialogSubmit(xhr, status, args) {                        
+                        if (args.validationFailed) {
+                            PF('detail').show();
+                        } else {
+                            PF('detail').hide();
+                        }                        
+                    }
+                </script>
+
+                <p:dialog id="addNewAd" widgetVar="addNewAd" modal="true">
+                    <h:form id="addNewAdForm" >
+                        <h:panelGrid columns="2" styleClass="centered-panel" >
+                            <p:panel id="primepanel" header="#{msgs.AddNewAd}" >
+
+                                <h:panelGrid columns="3" cellpadding="1" border="0" >
+
+                                    <p:outputLabel for="source" value="#{msgs.Source}"/>
+                                    <p:inputText id="source" label="#{msgs.Source}"
+                                                 value="#{selectedAd.ad.source}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}" >
+                                        <f:validateLength maximum="20" />
+                                    </p:inputText>
+                                    <p:message for="source" style="color:red" />
+                                    
+                                    <p:outputLabel for="url" value="#{msgs.URL}"/>
+                                    <p:inputText id="url" label="#{msgs.URL}"
+                                                 value="#{selectedAd.ad.url}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}" >
+                                        <f:validateLength maximum="255" />
+                                    </p:inputText>
+                                    <p:message for="url" style="color:red" />                                      
+                                    <div></div>
+                                    <p:commandButton value="#{msgs.Submit}"
+                                                     action="#{adDAOImpl.create(selectedAd.ad)}"        
+                                                     oncomplete="handleAddNewAdDialogSubmit(xhr, status, args)"
+                                                     update=":addNewAd :adTable"                                             
+                                                     />                            
+
+                                </h:panelGrid>                            
+
+                            </p:panel>            
+
+
+                        </h:panelGrid>
+                    </h:form>
+                </p:dialog>
+
+                <script type="text/javascript">
+                    function handleAddNewAdDialogSubmit(xhr, status, args) {                        
+                        if (args.validationFailed) {
+                            PF('addNewAd').show();
+                        } else {
+                            PF('addNewAd').hide();
+                        }                        
+                    }
+                </script>              
+
+            </ui:define>
+
+        </ui:composition>
+
+    </h:body>
+</html>
+
+

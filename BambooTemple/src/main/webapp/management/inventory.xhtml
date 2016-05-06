@@ -1,0 +1,477 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+
+    </h:head>
+    <h:body>
+
+        <ui:composition template="./managementTemplate.xhtml">            
+            <ui:define name="content">                
+                <div class="container-fluid">
+                    <div class = "panel panel-primary">
+                        <div class = "panel-heading">
+                            <h3 class = "panel-title">#{msgs.ManageInventory}</h3>
+                        </div>
+                        <div class = "panel-body">
+                            <div>
+                                <h:form>
+                                    <div class="container-fluid">
+                                        <div class="row">
+                                            <div class="col-sm-2">
+                                                <p:inputText value="#{searchQuery.keyword}">
+                                                    <p:ajax event="keyup" update=":bookTable" />
+                                                </p:inputText>
+                                            </div>                                            
+                                            <div class="col-sm-2">                                                
+                                                <p:selectOneMenu value="#{searchQuery.criteria}" style="width:125px">
+                                                    <f:selectItem itemValue="Title" itemLabel="#{msgs.Title}" />
+                                                    <f:selectItem itemValue="Author" itemLabel="#{msgs.Author}" />
+                                                    <f:selectItem itemValue="Publisher" itemLabel="#{msgs.Publisher}" />
+                                                    <f:selectItem itemValue="Description" itemLabel="#{msgs.Description}" />
+                                                    <f:selectItem itemValue="ISBN" itemLabel="#{msgs.ISBN}" />
+                                                    <p:ajax event="change" update=":bookTable" />
+                                                </p:selectOneMenu>                                                
+                                            </div>
+                                            <div></div>
+                                            <div class="col-sm-6">
+                                                <p:commandButton value="#{msgs.Submit}" update=":bookTable" />
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <p:commandButton value="#{msgs.AddNewBook}" action="#{selectedBook.setBookToNew()}" update=":addNewBook" oncomplete="PF('addNewBook').show()" />                                                
+                                            </div>
+                                        </div>                                    
+                                    </div>
+                                </h:form>
+                            </div>
+                            <br/>
+                            <div>
+                                <p:dataTable id="bookTable" var="inventory" value="#{inventoryDAOImpl.populateTable()}">
+                                    <p:column colspan="3" headerText="#{msgs.Title}">
+                                        <h:outputText value="#{inventory.title}" />
+                                    </p:column>
+
+                                    <p:column  colspan="1" headerText="#{msgs.Author}">
+                                        <h:outputText value="#{inventory.author}" />
+                                    </p:column>
+
+                                    <p:column  colspan="1" headerText="#{msgs.Publisher}">
+                                        <h:outputText value="#{inventory.publisher}" />
+                                    </p:column>
+
+                                    <p:column  colspan="1" headerText="#{msgs.ISBN}">
+                                        <h:outputText value="#{inventory.isbn}" />
+                                    </p:column>
+
+                                    <p:column  colspan="1" headerText="#{msgs.RemovalStatus}">
+                                        <h:outputText value="#{inventory.removalStatus}" />
+                                    </p:column>
+
+                                    <p:column colspan="4" headerText="#{msgs.Controls}">
+                                        <div class="container-fluid">                                            
+                                            <div class="row">
+                                                <h:form>                                                    
+                                                    <div class="col-sm-3"><p:commandButton value="#{msgs.DetailsEdit}" action="#{selectedBook.setInventory(inventory)}" update=":detail" oncomplete="PF('detail').show()" /></div>
+                                                    <div class="col-sm-3"><p:commandButton value="#{itemDAOImpl.findByBookID(inventory.bookId).size()} #{msgs.Orders}" action="#{selectedBook.setInventory(inventory)}" update=":orders" oncomplete="PF('orders').show()" /></div>
+                                                    <div class="col-sm-3"><p:commandButton value="#{reviewDAOImpl.findAllByBookId(inventory.bookId).size()} #{msgs.Reviews}" action="#{selectedBook.setInventory(inventory)}" update=":reviews" oncomplete="PF('reviews').show()" /></div>
+                                                    <div class="col-sm-3"><p:commandButton value="#{msgs.ChangeStatus}" action="#{inventoryDAOImpl.updateRemovalStatus(inventory)}" update=":bookTable"/></div>
+                                                </h:form>                                                                                                    
+                                            </div>
+                                        </div>
+                                    </p:column>                                    
+                                </p:dataTable>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+
+                <p:dialog id="detail" widgetVar="detail" modal="true">
+                    <h:form id="VeiwDetailEditBook" >
+                        <h:panelGrid columns="3" styleClass="centered-panel" >
+                            <p:panel id="primepanel" header="#{msgs.ViewDetailsAndEdit}" >
+
+                                <h:panelGrid columns="3" cellpadding="1" border="0" >                                   
+
+                                    <p:outputLabel for="ISBN" value="#{msgs.ISBN}"/>
+                                    <p:inputText id="ISBN" label="#{msgs.ISBN}"
+                                                 value="#{selectedBook.inventory.isbn}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}" converterMessage="#{msgs.InvalidISBN}" >
+                                        <f:convertNumber maxFractionDigits="0" type="number" integerOnly="true" />
+                                    </p:inputText>
+                                    <p:message for="ISBN" style="color:red" />
+
+                                    <p:outputLabel for="title" value="#{msgs.Title}"/>
+                                    <p:inputText id="title" label="#{msgs.Title}"
+                                                 value="#{selectedBook.inventory.title}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}" >
+                                        <f:validateLength maximum="255" />
+                                    </p:inputText>
+                                    <p:message for="title" style="color:red" />
+
+                                    <p:outputLabel for="numPages" value="#{msgs.NumPages}"/>
+                                    <p:inputText id="numPages" label="#{msgs.NumPages}"
+                                                 value="#{selectedBook.inventory.numPages}" 
+                                                 converterMessage="#{msgs.InvalidInteger}" >
+                                        <f:convertNumber maxFractionDigits="0" type="number" integerOnly="true" />
+                                    </p:inputText>
+                                    <p:message for="numPages" style="color:red" />
+
+                                    <p:outputLabel for="author" value="#{msgs.Author}"/>
+                                    <p:inputText id="author" label="#{msgs.Author}"
+                                                 value="#{selectedBook.inventory.author}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}">
+                                        <f:validateLength maximum="80" />
+                                    </p:inputText>
+                                    <p:message for="author" style="color:red" />
+
+                                    <p:outputLabel for="publisher" value="#{msgs.Publisher}"/>
+                                    <p:inputText id="publisher" label="#{msgs.Publisher}"
+                                                 value="#{selectedBook.inventory.publisher}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}">
+                                        <f:validateLength maximum="255" />
+                                    </p:inputText>
+                                    <p:message for="publisher" style="color:red" />
+
+                                    <p:outputLabel for="genre" value="#{msgs.Genre}"/>
+                                    <p:selectOneMenu id="genre" label="#{msgs.Genre}" value="#{selectedBook.inventory.genre}" style="width:203px" required="true" requiredMessage="#{msgs.Required}">
+                                                    <f:selectItem itemValue="Science Fiction" itemLabel="#{msgs.ScienceFiction}" />
+                                                    <f:selectItem itemValue="History" itemLabel="#{msgs.History}" />
+                                                    <f:selectItem itemValue="Romance" itemLabel="#{msgs.Romance}" />
+                                                    <f:selectItem itemValue="Sports" itemLabel="#{msgs.Sports}" />
+                                                    <f:selectItem itemValue="Cooking" itemLabel="#{msgs.Cooking}" />                                                    
+                                    </p:selectOneMenu>                                    
+                                    <p:message for="genre" style="color:red" />
+
+                                    <p:outputLabel for="eFormat" value="#{msgs.EFormat}"/>
+                                    <p:inputText id="eFormat" label="#{msgs.EFormat}"
+                                                 value="#{selectedBook.inventory.EFormat}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}">
+                                        <f:validateLength maximum="255" />
+                                    </p:inputText>
+                                    <p:message for="eFormat" style="color:red" />                                    
+
+                                    <p:outputLabel for="lPrice" value="#{msgs.LPrice}"/>
+                                    <p:inputText id="lPrice" label="#{msgs.LPrice}"
+                                                 value="#{selectedBook.inventory.LPrice}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}" converterMessage="#{msgs.InvalidAmount}">
+                                        <f:convertNumber type="currency" currencySymbol="$"/>
+                                    </p:inputText>
+                                    <p:message for="lPrice" style="color:red" />
+
+                                    <p:outputLabel for="sPrice" value="#{msgs.SPrice}"/>
+                                    <p:inputText id="sPrice" label="#{msgs.SPrice}"
+                                                 value="#{selectedBook.inventory.SPrice}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}" converterMessage="#{msgs.InvalidAmount}">
+                                        <f:convertNumber type="currency" currencySymbol="$"/>
+                                    </p:inputText>
+                                    <p:message for="sPrice" style="color:red" />
+
+                                    <p:outputLabel for="wPrice" value="#{msgs.WPrice}"/>
+                                    <p:inputText id="wPrice" label="#{msgs.WPrice}"
+                                                 value="#{selectedBook.inventory.WPrice}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}" converterMessage="#{msgs.InvalidAmount}">
+                                        <f:convertNumber type="currency" currencySymbol="$"/>
+                                    </p:inputText>
+                                    <p:message for="wPrice" style="color:red" />
+
+                                    <p:outputLabel for="createdOn" value="#{msgs.CreatedOn}"/>
+                                    <p:calendar id="createdOn" label="#{msgs.CreatedOn}"
+                                                 value="#{selectedBook.inventory.createdOn}"
+                                                 pattern="yyyy-MM-dd"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}" converterMessage="#{msgs.InvadidDate}">
+                                        <f:convertDateTime pattern="yyyy-M-d"/>
+                                    </p:calendar>
+                                    <p:message for="createdOn" style="color:red" />
+
+                                    <h:inputHidden value="#{selectedBook.inventory.bookId}"></h:inputHidden>
+                                </h:panelGrid>                                
+
+                            </p:panel>                            
+                            <p:panel id="secondpanel" header="#{msgs.ViewDetailsAndEdit}" >
+                                <h:panelGrid columns="3" cellpadding="1" border="0" >
+                                    <p:outputLabel for="description" value="#{msgs.Description}"/>
+                                    <p:inputTextarea rows="6" cols="33" id="description" label="#{msgs.Description}"
+                                                     value="#{selectedBook.inventory.description}"
+                                                     required="true"
+                                                     requiredMessage="#{msgs.Required}">
+                                        <f:validateLength maximum="65535" />
+                                    </p:inputTextarea>
+                                    <p:message for="description" style="color:red" />
+                                    
+                                    <p:fileUpload fileUploadListener="#{inventoryDAOImpl.upload}" auto="true"/>
+                                    <br></br>
+
+                                    <p:commandButton value="#{msgs.Submit}"
+                                                     action="#{inventoryDAOImpl.update(selectedBook.inventory)}"        
+                                                     oncomplete="handleDetailDialogSubmit(xhr, status, args)"
+                                                     update=":detail :bookTable"                                             
+                                                     />
+                                </h:panelGrid>
+                            </p:panel>
+                        </h:panelGrid>
+                    </h:form>
+                </p:dialog>
+
+                <script type="text/javascript">
+                    function handleDetailDialogSubmit(xhr, status, args) {
+                        if (args.validationFailed) {
+                            PF('detail').show();
+                        } else {
+                            PF('detail').hide();
+                        }
+                    }
+                </script>
+
+                <p:dialog id="addNewBook" widgetVar="addNewBook" modal="true">
+                    <h:form id="addNewBookForm" enctype="multipart/form-data">
+                        <h:panelGrid columns="3" styleClass="centered-panel" >
+                            <p:panel id="primepanel" header="#{msgs.AddNewBook}" >
+
+                                <h:panelGrid columns="3" cellpadding="1" border="0" >                                   
+
+                                    <p:outputLabel for="ISBN" value="#{msgs.ISBN}"/>
+                                    <p:inputText id="ISBN" label="#{msgs.ISBN}"
+                                                 value="#{selectedBook.inventory.isbn}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}" converterMessage="#{msgs.InvalidISBN}" >
+                                        <f:convertNumber maxFractionDigits="0" type="number" integerOnly="true" />
+                                    </p:inputText>
+                                    <p:message for="ISBN" style="color:red" />
+
+                                    <p:outputLabel for="title" value="#{msgs.Title}"/>
+                                    <p:inputText id="title" label="#{msgs.Title}"
+                                                 value="#{selectedBook.inventory.title}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}" >
+                                        <f:validateLength maximum="255" />
+                                    </p:inputText>
+                                    <p:message for="title" style="color:red" />
+
+                                    <p:outputLabel for="numPages" value="#{msgs.NumPages}"/>
+                                    <p:inputText id="numPages" label="#{msgs.NumPages}"
+                                                 value="#{selectedBook.inventory.numPages}" 
+                                                 converterMessage="#{msgs.InvalidInteger}" >
+                                        <f:convertNumber maxFractionDigits="0" type="number" integerOnly="true" />
+                                    </p:inputText>
+                                    <p:message for="numPages" style="color:red" />
+
+                                    <p:outputLabel for="author" value="#{msgs.Author}"/>
+                                    <p:inputText id="author" label="#{msgs.Author}"
+                                                 value="#{selectedBook.inventory.author}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}">
+                                        <f:validateLength maximum="80" />
+                                    </p:inputText>
+                                    <p:message for="author" style="color:red" />
+
+                                    <p:outputLabel for="publisher" value="#{msgs.Publisher}"/>
+                                    <p:inputText id="publisher" label="#{msgs.Publisher}"
+                                                 value="#{selectedBook.inventory.publisher}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}">
+                                        <f:validateLength maximum="255" />
+                                    </p:inputText>
+                                    <p:message for="publisher" style="color:red" />
+
+                                    <p:outputLabel for="genre" value="#{msgs.Genre}"/>
+                                    <p:selectOneMenu id="genre" label="#{msgs.Genre}" value="#{selectedBook.inventory.genre}" style="width:203px" required="true" requiredMessage="#{msgs.Required}">
+                                                    <f:selectItem itemValue="Science Fiction" itemLabel="#{msgs.ScienceFiction}" />
+                                                    <f:selectItem itemValue="History" itemLabel="#{msgs.History}" />
+                                                    <f:selectItem itemValue="Romance" itemLabel="#{msgs.Romance}" />
+                                                    <f:selectItem itemValue="Sports" itemLabel="#{msgs.Sports}" />
+                                                    <f:selectItem itemValue="Cooking" itemLabel="#{msgs.Cooking}" />                                                    
+                                    </p:selectOneMenu>
+                                    <p:message for="genre" style="color:red" />
+
+                                    <p:outputLabel for="eFormat" value="#{msgs.EFormat}"/>
+                                    <p:inputText id="eFormat" label="#{msgs.EFormat}"
+                                                 value="#{selectedBook.inventory.EFormat}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}">
+                                        <f:validateLength maximum="255" />
+                                    </p:inputText>
+                                    <p:message for="eFormat" style="color:red" />                                    
+
+                                    <p:outputLabel for="lPrice" value="#{msgs.LPrice}"/>
+                                    <p:inputText id="lPrice" label="#{msgs.LPrice}"
+                                                 value="#{selectedBook.inventory.LPrice}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}" converterMessage="#{msgs.InvalidAmount}">
+                                        <f:convertNumber type="currency" currencySymbol="$"/>
+                                    </p:inputText>
+                                    <p:message for="lPrice" style="color:red" />
+
+                                    <p:outputLabel for="sPrice" value="#{msgs.SPrice}"/>
+                                    <p:inputText id="sPrice" label="#{msgs.SPrice}"
+                                                 value="#{selectedBook.inventory.SPrice}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}" converterMessage="#{msgs.InvalidAmount}">
+                                        <f:convertNumber type="currency" currencySymbol="$"/>
+                                    </p:inputText>
+                                    <p:message for="sPrice" style="color:red" />
+
+                                    <p:outputLabel for="wPrice" value="#{msgs.WPrice}"/>
+                                    <p:inputText id="wPrice" label="#{msgs.WPrice}"
+                                                 value="#{selectedBook.inventory.WPrice}"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}" converterMessage="#{msgs.InvalidAmount}">
+                                        <f:convertNumber type="currency" currencySymbol="$"/>
+                                    </p:inputText>
+                                    <p:message for="wPrice" style="color:red" />
+
+                                    <p:outputLabel for="createdOn" value="#{msgs.CreatedOn}"/>
+                                    <p:calendar id="createdOn" label="#{msgs.CreatedOn}"
+                                                 value="#{selectedBook.inventory.createdOn}"
+                                                 pattern="yyyy-MM-dd"
+                                                 required="true"
+                                                 requiredMessage="#{msgs.Required}" converterMessage="#{msgs.InvadidDate}">
+                                        <f:convertDateTime pattern="yyyy-M-d"/>
+                                    </p:calendar>
+                                    <p:message for="createdOn" style="color:red" />                      
+
+
+                                </h:panelGrid>                                
+
+                            </p:panel>
+                            <p:panel id="secondpanel" header="#{msgs.ViewDetailsAndEdit}" >
+                                <h:panelGrid columns="3" cellpadding="1" border="0" >
+                                    <p:outputLabel for="description" value="#{msgs.Description}"/>
+                                    <p:inputTextarea rows="6" cols="33" id="description" label="#{msgs.Description}"
+                                                     value="#{selectedBook.inventory.description}"
+                                                     required="true"
+                                                     requiredMessage="#{msgs.Required}">
+                                        <f:validateLength maximum="65535" />
+                                    </p:inputTextarea>
+                                    <p:message for="description" style="color:red" />
+
+                                    <p:fileUpload fileUploadListener="#{inventoryDAOImpl.upload}" auto="true"/>
+                                    <br></br>    
+                                    
+
+                                    <p:commandButton value="#{msgs.Submit}"
+                                                     action="#{inventoryDAOImpl.create(selectedBook.inventory)}"        
+                                                     oncomplete="handleAddNewBookDialogSubmit(xhr, status, args)"
+                                                     update=":addNewBook :bookTable"                                                     
+                                                     />                                                                  
+
+
+                                </h:panelGrid>
+                            </p:panel>
+
+
+                        </h:panelGrid>
+                    </h:form>
+                </p:dialog>
+
+                <script type="text/javascript">
+                    function handleAddNewBookDialogSubmit(xhr, status, args) {
+                        if (args.validationFailed) {
+                            PF('addNewBook').show();
+                        } else {
+                            PF('addNewBook').hide();
+                        }
+                    }
+                </script>
+
+                <p:dialog id="orders" widgetVar="orders" modal="true" width="75%">
+                    <div class="container-fluid">
+                        <div class = "panel panel-primary">
+                            <div class = "panel-heading">
+                                <h3 class = "panel-title">#{msgs.OrdersFor} #{selectedBook.inventory.title}</h3>
+                            </div>
+                            <div class = "panel-body">                                
+                                <div>
+
+                                    <p:dataTable var="item" value="#{itemDAOImpl.findByBookID(selectedBook.inventory.bookId)}">
+
+                                        <p:column  colspan="1" headerText="#{msgs.ItemId}">
+                                            <h:outputText value="#{item.itemID}" />
+                                        </p:column>
+
+                                        <p:column  colspan="1" headerText="#{msgs.OrderId}">
+                                            <h:outputText value="#{item.orderID}" />
+                                        </p:column>
+
+                                        <p:column  colspan="6" headerText="#{msgs.OrderedOn}">
+                                            <h:outputText value="#{orderDAOImpl.findByID(item.orderID).orderedON}" />
+                                        </p:column>
+
+                                        <p:column  colspan="6" headerText="#{msgs.OrderedBy}">
+                                            <h:outputText value="#{userDAOImpl.findByID(orderDAOImpl.findByID(item.orderID).userID).fname} #{userDAOImpl.findByID(orderDAOImpl.findByID(item.orderID).userID).lname}" />
+                                        </p:column>
+
+                                        <p:column colspan="4" headerText="#{msgs.Controls}">
+                                            <div class="container-fluid">                                            
+                                                <div class="row">
+                                                    <h:form>
+                                                        <div class="col-sm-6"><p:commandButton value="#{msgs.Delete}" action="#{itemDAOImpl.deleteItem(item.itemID)}" update=":orders :bookTable" oncomplete="PF('orders').show()"/></div>                                                    
+                                                    </h:form>                                                                                                  
+                                                </div>
+                                            </div>
+                                        </p:column>                                    
+                                    </p:dataTable>                                    
+                                </div>
+                            </div>
+                        </div>                    
+                    </div>
+                </p:dialog>
+
+                <p:dialog id="reviews" widgetVar="reviews" modal="true" width="75%">
+                    <div class="container-fluid">
+                        <div class = "panel panel-primary">
+                            <div class = "panel-heading">
+                                <h3 class = "panel-title">#{msgs.ReviewsFor} #{selectedBook.inventory.title}</h3>
+                            </div>
+                            <div class = "panel-body">                                
+                                <div>
+
+                                    <p:dataTable var="review" value="#{reviewDAOImpl.findAllByBookId(selectedBook.inventory.bookId)}">
+
+                                        <p:column  colspan="5" headerText="#{msgs.Comments}">
+                                            <strong><h:outputText value="#{userDAOImpl.findByID(review.userId).fname} #{userDAOImpl.findByID(review.userId).lname} wrote:" /></strong>
+                                            <br></br>
+                                            <h:outputText value="#{review.comment}" />
+                                        </p:column>
+
+                                        <p:column  colspan="1" headerText="#{msgs.Status}">
+                                            <h:outputText value="#{review.approval_Status==0?'Pending':review.approval_Status==1?'Approved':'Disapproved'}" />
+                                        </p:column>
+
+                                        <p:column colspan="1" headerText="#{msgs.Controls}">
+                                            <div>
+                                                <h:form>
+                                                    <div><p:commandButton style="width:120px;margin:1px " value="#{msgs.Approve}" action="#{reviewDAOImpl.updateReviewStatus(review.reviewId, 1)}" update=":reviews" oncomplete="PF('reviews').show()"/></div>
+                                                    <div><p:commandButton style="width:120px;margin:1px" value="#{msgs.Disapprove}" action="#{reviewDAOImpl.updateReviewStatus(review.reviewId, 2)}" update=":reviews" oncomplete="PF('reviews').show()"/></div>                                                        
+                                                    <div><p:commandButton style="width:120px;margin:1px" value="#{msgs.Delete}" action="#{reviewDAOImpl.deleteReview(review.reviewId)}" update=":reviews :bookTable" oncomplete="PF('reviews').show()"/></div>                                                    
+                                                </h:form>
+                                            </div>
+                                        </p:column>                                    
+                                    </p:dataTable>
+
+                                </div>
+                            </div>
+                        </div>                    
+                    </div>                    
+                </p:dialog>
+
+            </ui:define>
+
+        </ui:composition>
+
+    </h:body>
+</html>
+

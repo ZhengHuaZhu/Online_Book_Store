@@ -1,0 +1,229 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!--Author: Derek Herbert-->
+<!--This page shows user information. It only displays content if a user is logged on. The user can edit their information
+and also view books that they have ordered. These books have links to their specific book profile page where the user can 
+download them.-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+    <h:head>
+        <title>Facelet Title</title>
+    </h:head>
+    <h:body>
+       <ui:composition template="./masterLayout.xhtml">
+        <ui:define name="content">   
+            <c:if test="#{not empty login.user}">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            #{msgs.UserInfo}
+                        </h3>
+                    </div>
+                
+                    
+                    <p:dataList id="userList" value="#{login.user}" var="user" type="definition">
+                        #{msgs.FirstName}: #{user.fname} <br />
+                        #{msgs.LastName}: #{user.lname} <br />
+                        #{msgs.Company}: #{user.company} <br />
+                        #{msgs.Address1}: #{user.address1} <br />
+                        #{msgs.Address2}: #{user.address2} <br />
+                        #{msgs.City}: #{user.city} <br />
+                        #{msgs.Province}: #{user.province} <br />
+                        #{msgs.Country}: #{user.country} <br />
+                        #{msgs.PostalCode}: #{user.postalcode} <br />
+                        #{msgs.HomePhone}: #{user.homephone} <br />
+                        #{msgs.CellPhone}: #{user.cellphone} <br />
+                        #{msgs.Email}: #{user.email} <br />
+                        <h:form>
+                            <div class="col-sm-3"><p:commandButton value="#{msgs.Edit}" action="#{selectedUser.setUser(user)}" update=":detail" oncomplete="PF('detail').show()" /></div>
+                        </h:form> 
+                    </p:dataList>              
+                </div>
+            </c:if>
+            <p:dialog id="detail" widgetVar="detail" modal="true">
+                <h:form>
+                    <h:panelGrid columns="2" styleClass="centered-panel" >
+                        <p:panel id="primepanel" header="#{msgs.Edit}" >
+                            <h:panelGrid columns="3" cellpadding="1" border="0" >                                   
+                                <p:outputLabel for="fname" value="#{msgs.FirstName}"/>
+                                <p:inputText id="fname" label="#{msgs.FirstName}"
+                                             value="#{selectedUser.user.fname}"
+                                             required="true"
+                                             requiredMessage="#{msgs.Required}" >
+                                    <f:validateLength maximum="40" />
+                                </p:inputText>
+                                <p:message for="fname" style="color:red" />
+
+                                <p:outputLabel for="lname" value="#{msgs.LastName}"/>
+                                <p:inputText id="lname" label="#{msgs.LastName}"
+                                             value="#{selectedUser.user.lname}"
+                                             required="true"
+                                             requiredMessage="#{msgs.Required}" >
+                                    <f:validateLength maximum="40" />
+                                </p:inputText>
+                                <p:message for="lname" style="color:red" />
+
+                                <p:outputLabel for="password" value="#{msgs.Password}"/>
+                                <p:inputText id="password" label="#{msgs.Password}"
+                                             value="#{selectedUser.user.password}"
+                                             required="true"
+                                             requiredMessage="#{msgs.Required}"
+                                             validatorMessage="#{msgs.PassVal}">
+                                    <f:validateLength minimum="5" maximum="15" for="password"/>
+                                </p:inputText>
+                                <p:message for="password" style="color:red" />
+
+                                <p:outputLabel for="company" value="#{msgs.Company}"/>
+                                <p:inputText id="company" label="#{msgs.Company}"
+                                             value="#{selectedUser.user.company}">
+                                    <f:validateLength maximum="50" />
+                                </p:inputText>
+                                <p:message for="company" style="color:red" />
+
+                                <p:outputLabel for="address1" value="#{msgs.Address1}"/>
+                                <p:inputText id="address1" label="#{msgs.Address1}"
+                                             value="#{selectedUser.user.address1}"
+                                             required="true"
+                                             requiredMessage="#{msgs.Required}">
+                                    <f:validateLength maximum="50" />
+                                </p:inputText>
+                                <p:message for="address1" style="color:red" />
+
+                                <p:outputLabel for="address2" value="#{msgs.Address2}"/>
+                                <p:inputText id="address2" label="#{msgs.Address2}"
+                                             value="#{selectedUser.user.address2}">
+                                    <f:validateLength maximum="50" />
+                                </p:inputText>
+                                <p:message for="address2" style="color:red" />
+
+                                <p:outputLabel for="city" value="#{msgs.City}"/>
+                                <p:inputText id="city" label="#{msgs.City}"
+                                             value="#{selectedUser.user.city}"
+                                             required="true"
+                                             requiredMessage="#{msgs.Required}">
+                                    <f:validateLength maximum="50" />
+                                </p:inputText>
+                                <p:message for="city" style="color:red" />
+
+                                <p:outputLabel for="province" value="#{msgs.Province}"/>
+                                <p:inputText id="province" label="#{msgs.Province}"
+                                             value="#{selectedUser.user.province}"
+                                             required="true"
+                                             requiredMessage="#{msgs.Required}">
+                                    <f:validateLength maximum="2" />
+                                </p:inputText>
+                                <p:message for="province" style="color:red" />
+
+                                <p:outputLabel for="country" value="#{msgs.Country}"/>
+                                <p:inputText id="country" label="#{msgs.Country}"
+                                             value="#{selectedUser.user.country}"
+                                             required="true"
+                                             requiredMessage="#{msgs.Required}">
+                                    <f:validateLength maximum="50" />
+                                </p:inputText>
+                                <p:message for="country" style="color:red" />
+
+                                <p:outputLabel for="postalCode" value="#{msgs.PostalCode}"/>
+                                <p:inputText id="postalCode" label="#{msgs.PostalCode}"
+                                             value="#{selectedUser.user.postalcode}"
+                                             required="true"
+                                             requiredMessage="#{msgs.Required}">
+                                    <f:validateLength maximum="7" />
+                                </p:inputText>
+                                <p:message for="postalCode" style="color:red" />
+
+                                <p:outputLabel for="homePhone" value="#{msgs.HomePhone}"/>
+                                <p:inputText id="homePhone" label="#{msgs.HomePhone}"
+                                             value="#{selectedUser.user.homephone}">
+                                    <f:validateLength maximum="12" />
+                                </p:inputText>
+                                <p:message for="homePhone" style="color:red" />
+
+                                <p:outputLabel for="cellPhone" value="#{msgs.CellPhone}"/>
+                                <p:inputText id="cellPhone" label="#{msgs.CellPhone}"
+                                             value="#{selectedUser.user.cellphone}">
+                                    <f:validateLength maximum="12" />
+                                </p:inputText>
+                                <p:message for="cellPhone" style="color:red" />
+
+                                <h:inputHidden value="#{selectedUser.user.user_id}"></h:inputHidden>
+
+                                <p:commandButton value="#{msgs.Submit}"
+                                                 action="#{userDAOImpl.update(selectedUser.user)}"        
+                                                 oncomplete="handleDetailDialogSubmit(xhr, status, args)"
+                                                 update=":detail :userList"                                             
+                                                 />
+                            </h:panelGrid>                                
+                        </p:panel>
+                    </h:panelGrid>
+                </h:form>
+            </p:dialog>
+
+            <script type="text/javascript">
+                function handleDetailDialogSubmit(xhr, status, args) {                        
+                    if (args.validationFailed) {
+                        PF('detail').show();
+                    } else {
+                        PF('detail').hide();
+                    }                        
+                }
+            </script>
+
+            <br />
+
+            <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            #{msgs.Purchases}
+                        </h3>
+                    </div>
+
+                    <h:form>   
+                        <p:dataScroller value="#{orderDAOImpl.findByUserID(login.user.user_id)}" var="order" chunkSize="10" mode="inline" scrollHeight="900">                        
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">
+                                        #{msgs.OrderNumber} #{order.orderID}
+                                    </h3>
+                                </div>
+                                <h:form>
+                                    <h:panelGrid class="list-group-item" columns="2" columnClasses="logo,detail">
+                                        <p:dataScroller value="#{itemDAOImpl.findByOrderID(order.orderID)}" var="item" chunkSize="10" mode="inline" scrollHeight="785">
+                                            <ui:param name="book" value="#{inventoryDAOImpl.findByBookId(item.bookID)}" /> 
+                                            <h:panelGrid class="list-group-item" columns="2" columnClasses="logo,detail">
+                                                <h:commandLink action="bookProfile">
+                                                    <f:setPropertyActionListener target="#{inventoryAction.bookId}" value="#{item.bookID}"/>
+                                                    <p:graphicImage name="images/bookCovers/#{book.isbn}.jpg" style="width: 150px; max-width: 150px;" /> 
+                                                </h:commandLink>
+                                                <p:outputPanel style="padding-left: 40px;">
+                                                    <h:panelGrid columns="2" cellpadding="5">
+                                                        <h:outputText value="Title:" />
+                                                        <h:link outcome="bookProfile">
+                                                            <h:outputText value="#{book.title}" style="font-weight: bold;" />
+                                                        </h:link>
+                                                        <h:outputText value="Author:" />
+                                                        <h:link outcome="searchResults">
+                                                            <h:outputText value="#{book.author}" style="font-weight: bold"/>
+                                                        </h:link>
+                                                        <h:outputText value="Genre:" />
+                                                        <h:outputText value="#{book.genre}" style="font-weight: bold"/>
+                                                        <h:outputText value="Price" />
+                                                        <h:outputText value="$#{book.displayPrice}" style="font-weight: bold; color: darkred;"/> 
+                                                    </h:panelGrid>
+                                                </p:outputPanel>  
+                                            </h:panelGrid>
+                                        </p:dataScroller>
+                                    </h:panelGrid>
+                                </h:form>
+                            </div>
+                        </p:dataScroller>                       
+                    </h:form>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

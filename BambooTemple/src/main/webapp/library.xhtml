@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--T
+    This web page display all the books bought by the logged in customer.
+-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <h:body>
+        <ui:composition template="./masterLayout.xhtml">
+            <ui:define name="content">               
+                <h:head>
+                    <h:outputStylesheet library="css" name="library.css" />
+                </h:head>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h1><h:outputText style="padding: 20%; color: white" value="Your Book Library is Empty" rendered="#{ empty libraryBooks.allCustomerBook}"/></h1>
+                            <ui:repeat var="libraryBook" value="#{libraryBooks.allCustomerBook}" varStatus="status" rendered="#{not empty libraryBooks.allCustomerBook}">
+                                <div class="col-sm-6 col-md-4">
+                                    <div class="thumbnail" >
+                                        <img style="max-width:350px; max-height: 350px;" src="resources/images/bookCovers/#{libraryBook.isbn}.jpg" class="img-responsive"/>
+                                        <h4>#{libraryBook.title}</h4>
+                                        <h:form>
+                                            <h:commandButton class="btn btn-success btn-lg" style="margin-left: 6%; width: 80%;" value="#{msgs.Download}" actionListener="#{fileDownloadView.setBookTitle(libraryBook.title)}">
+                                                <p:fileDownload value="#{fileDownloadView.file}" />
+                                            </h:commandButton>
+                                        </h:form>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

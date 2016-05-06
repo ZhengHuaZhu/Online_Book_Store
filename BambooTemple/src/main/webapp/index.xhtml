@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Author: Derek Herbert-->
+<!--This is the main page for the site. It contains 3 carousels, one of which is only visible if a user is logged on. 
+They display the books on sale, the 3 most recently added books and if the user is logged on or has a cookie, it
+displays all the books from their last visited genre.-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:body>
+        <ui:composition template="./masterLayout.xhtml">
+            <ui:define name="content">
+                <h:head>
+                    <title>Bamboo Temple</title>
+
+                    <link rel="stylesheet" type="text/css" href="resources/css/indexcarousel.css"/>
+                    <link rel="stylesheet" type="text/css" href="resources/css/bootstrap.min.css"/>
+                    <link rel="stylesheet" type="text/css" href="resources/css/bootstrap-theme.min.css"/>
+                </h:head>
+
+                <div style="width:100%; height:90px;">
+                    <iframe src="http://matthewjamestaylor.com/responsive-ads/ad.html"
+                            border="0"
+                            scrolling="no"
+                            allowtransparency="true"
+                            width="100%"
+                            height="100%"
+                            style="border:0;"></iframe>
+                </div>
+                <br/> 
+                
+                <!-- This carousel is added by Marjorie Morales -->
+                <div class="container-fluid">
+                    <div class="row">
+                        <!-- Carousel -->
+                        <div id="carousel-example-generic" class="carousel fade-carousel slide" data-ride="carousel" data-interval="3000">
+                            <!-- Indicators -->
+                            <ol class="carousel-indicators">
+                                <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+                                <li data-target="#carousel-example-generic" data-slide-to="1"></li>
+                                <li data-target="#carousel-example-generic" data-slide-to="2"></li>
+                            </ol>
+                            <!-- Wrapper for slides -->
+                            <div class="carousel-inner">
+                                <div class="item slides active">
+                                    <img src="resources/images/carousel/book_creative.jpg" alt="First slide"/>
+                                    <!-- Static Header -->
+                                    <div class="hero">
+                                        <hgroup>
+                                            <h1>#{msgs.Creative}</h1>        
+                                        </hgroup>
+                                    </div>
+                                </div>
+                                <div class="item slides">
+                                    <img src="resources/images/carousel/book_smart.jpg"  alt="Second slide"/>
+                                    <!-- Static Header -->
+                                    <div class="hero">
+                                        <hgroup>
+                                            <h1>#{msgs.Smart}</h1>        
+                                        </hgroup>
+                                    </div>
+                                </div>
+                                <div class="item slides">
+                                    <img src="resources/images/carousel/book3.jpg"  alt="Third slide"/>
+                                    <!-- Static Header -->
+                                    <div class="hero">
+                                        <hgroup>
+                                            <h1>#{msgs.Amazing}</h1>        
+                                        </hgroup>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- /carousel -->
+                    </div>
+                </div>
+                
+                <br/><br/>
+                <h:form>
+                    <p:carousel value="#{imagesView.specials}" headerText="#{msgs.specials}" var="book" itemStyle="text-align:center" responsive="true">
+                        <p:panelGrid columns="1" style="height:350px;max-height:350px;width:100%;margin:10px 0px" columnClasses="value" layout="grid" styleClass="ui-panelgrid-blank">
+                            <f:facet name="header">
+                                <h:commandLink action="bookProfile">
+                                    <f:setPropertyActionListener target="#{inventoryAction.bookId}" value="#{book.bookId}"/>    
+                                    <f:setPropertyActionListener target="#{searchQuery.keyword}" value="#{book.genre}"/>
+                                    <p:graphicImage name="images/bookCovers/#{book.isbn}.jpg" style="width: 150px; max-width: 150px; height: 225px; max-height: 225px;" />
+                                </h:commandLink>
+                            </f:facet>
+
+                            <h:outputText value="#{book.title}" />                                        
+                            <h:outputText value="#{book.author}" />                                        
+                            <span style="color:green">$#{book.displayPrice}</span> <span style="color:red">#{book.rebate}</span>
+                        </p:panelGrid>
+
+                        <f:facet name="footer">
+                            #{msgs.thereAre} #{imagesView.specials.size()} #{msgs.booksOnSale}!
+                        </f:facet>
+                    </p:carousel>
+                </h:form>
+
+                <br />
+
+                <c:if test="#{imagesView.suggested ne null}">
+                    <h:form>
+                        <p:carousel value="#{imagesView.suggested}" headerText="#{msgs.suggested}" var="book" itemStyle="text-align:center" responsive="true">
+                            <p:panelGrid columns="1" style="height:350px;max-height:350px;width:100%;margin:10px 0px" columnClasses="value" layout="grid" styleClass="ui-panelgrid-blank">
+                                <f:facet name="header">
+                                    <h:commandLink action="bookProfile">
+                                        <f:setPropertyActionListener target="#{inventoryAction.bookId}" value="#{book.bookId}"/>
+                                        <f:setPropertyActionListener target="#{searchQuery.keyword}" value="#{book.genre}"/>
+                                        <p:graphicImage name="images/bookCovers/#{book.isbn}.jpg" style="width: 150px; max-width: 150px; height: 225px; max-height: 225px;" />
+                                    </h:commandLink>
+                                </f:facet>
+
+                                <h:outputText value="#{book.title}" />                                       
+                                <h:outputText value="#{book.author}" />                                        
+                                <span style="color:green">$#{book.displayPrice}</span> <span style="color:red">#{book.rebate}</span>
+                            </p:panelGrid>
+                        </p:carousel>
+                    </h:form>
+                    <br />
+                </c:if>
+
+                <h:form>
+                    <p:carousel value="#{imagesView.recent}" headerText="#{msgs.newArrivals}" var="book" itemStyle="text-align:center" responsive="true">
+                        <p:panelGrid columns="1" style="height:350px;max-height:350px;width:100%;margin:10px 0px" columnClasses="value" layout="grid" styleClass="ui-panelgrid-blank">
+                            <f:facet name="header">
+                                <h:commandLink action="bookProfile">
+                                    <f:setPropertyActionListener target="#{inventoryAction.bookId}" value="#{book.bookId}"/>       
+                                    <f:setPropertyActionListener target="#{searchQuery.keyword}" value="#{book.genre}"/>
+                                    <p:graphicImage name="images/bookCovers/#{book.isbn}.jpg" style="width: 150px; max-width: 150px; height: 225px; max-height: 225px;" />
+                                </h:commandLink>
+                            </f:facet>
+
+                            <h:outputText value="#{book.title}" />                                        
+                            <h:outputText value="#{book.author}" />                                        
+                            <span style="color:green">$#{book.displayPrice}</span> <span style="color:red">#{book.rebate}</span>
+                        </p:panelGrid>
+                    </p:carousel>
+                </h:form>          
+                <br/>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

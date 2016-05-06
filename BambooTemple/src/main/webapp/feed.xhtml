@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Bamboo Temple</title>
+    </h:head>
+    <h:body>
+        <p:feedReader value="#{rssDAOImpl.findInEffectRss().url}" var="feed">
+            <h:outputText value="#{feed.title}" style="font-weight: bold;display:block"/>
+            <h:outputText value="#{feed.description.value}" escape="false"/>
+            <p:separator />
+        </p:feedReader>
+    </h:body>
+</html>

@@ -1,0 +1,157 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+   This web pages displays all the invoice of the order which displays the 
+    order's items, subtotal, taxes, and total prices. 
+    This page also allow the customer to print and download the invoice.
+
+    @author Marjorie Morales
+-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+    <h:head>
+        <title>#{msgs.ShoppingCart}</title>
+        <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'/>
+        <link rel="stylesheet" type="text/css" href="resources/css/style.css"/>
+        <link rel="stylesheet" type="text/css" href="resources/css/bootstrap.min.css"/>
+    </h:head>
+
+    <h:body>
+        <ui:composition template="./masterLayout.xhtml">
+            <ui:define name="content">
+                <div class="container-fluid outer-section" style=' background-color: white;'>
+                    <p:outputPanel id="print-area">
+                        <div class="col-xs-7">
+                            <h2>
+                                <p:graphicImage name="images/logo.jpg" style="width: 100px"/>
+                                Bamboo Temple
+                            </h2>
+                        </div>
+                        <div class="col-xs-5 text-right">
+                            <h2>#{msgs.INVOICE}</h2>
+                        </div>
+                        <hr/>
+                        <h:dataTable value="#{invoice.order}" var="order" style="width: 115%; ">
+                            <h:column >
+                                <div class="row " style="padding-top: 2%;">
+                                    <div class="col-lg-5 col-md-4 col-sm-4">
+                                        <div class="panel panel-info">
+                                            <div class="panel-heading">
+                                                <h4>#{msgs.ClientDetails}</h4>
+                                            </div>
+                                            <h:dataTable value="#{invoice.user}" var="user" style="width: 120%; margin-left: 5%;">
+                                                <h:column >
+                                                    <h4><strong>#{user.fname} #{user.lname}</strong></h4>
+                                                    <h4>#{user.address1}, #{user.city} #{user.province}</h4>
+                                                    <h4>#{user.country} - #{user.postalcode}</h4>
+                                                    <h4><strong>#{msgs.Email} </strong>#{user.email}</h4>
+                                                </h:column>
+                                            </h:dataTable>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-5 col-md-4 col-sm-4">
+                                        <div class="panel panel-info">
+                                            <div class="panel-heading">
+                                                <h4>#{msgs.Payment}</h4>
+                                            </div>
+                                            <div style="margin-left: 5%;">
+                                                <h4><strong>#{msgs.InvoiceNo} </strong>##{order.orderID}</h4>
+                                                <h4>#{msgs.PurchasedOn}  #{order.orderedON}</h4>
+                                                <br/>
+                                                <br/>
+                                                <br/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </h:column>
+                        </h:dataTable>                    
+                        <hr/>
+                        <br />                    
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title"><strong>#{msgs.OrderSummary}</strong></h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-condensed">
+                                                <thead>
+                                                    <tr>
+                                                        <td><strong>#{msgs.Book}</strong></td>
+                                                        <td class="text-center"><strong>#{msgs.PriceOrder}</strong></td>
+                                                        <td class="text-center"><strong>#{msgs.Taxes}</strong></td>
+                                                        <td class="text-right"><strong>#{msgs.Total}</strong></td>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <ui:repeat value="#{invoice.orderItems}" var="item" >
+                                                        <tr>
+                                                            <td>#{invoice.getBookTitle(item)}</td>
+                                                            <td class="text-center">#{msgs.currency} #{item.price}</td>
+                                                            <td class="text-center">
+                                                                <h:outputText value="#{msgs.currency}#{invoice.getItemTotalTaxes(item)}">
+                                                                    <f:convertNumber type="currency" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
+                                                                </h:outputText>
+                                                            </td>
+                                                            <td class="text-right">
+                                                                <h:outputText value="#{msgs.currency}#{invoice.getItemTotalPrice(item)}">
+                                                                    <f:convertNumber type="currency" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
+                                                                </h:outputText></td>
+                                                        </tr>
+                                                    </ui:repeat>
+                                                    <tr>
+                                                        <td class="thick-line"></td>
+                                                        <td class="thick-line"></td>
+                                                        <td class="thick-line text-center"><strong>#{msgs.Subtotal}</strong></td>
+                                                        <td class="thick-line text-right">
+                                                            <h:outputText value="#{msgs.currency}#{invoice.subTotal}">
+                                                                <f:convertNumber type="currency" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
+                                                            </h:outputText>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="no-line"></td>
+                                                        <td class="no-line"></td>
+                                                        <td class="no-line text-center"><strong>#{msgs.TotalTax}</strong></td>
+                                                        <td class="no-line text-right">
+                                                            <h:outputText value="#{msgs.currency}#{invoice.totalOrderTaxes}">
+                                                                <f:convertNumber type="currency" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
+                                                            </h:outputText></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="no-line"></td>
+                                                        <td class="no-line"></td>
+                                                        <td class="no-line text-center"><strong>#{msgs.Total}</strong></td>
+                                                        <td class="no-line text-right">
+                                                            <h:outputText value="#{msgs.currency}#{invoice.orderTotal}">
+                                                                    <f:convertNumber type="currency" groupingUsed="true" minFractionDigits="2" pattern="#0.00"/>
+                                                                </h:outputText></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                    </p:outputPanel>
+                    <hr />
+                    <div class="row pad-bottom">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <p:commandButton class="btn btn-primary " value="Print Invoice" type="button" style="display:block;margin-bottom: 20px">
+                                <p:printer target="print-area" />
+                            </p:commandButton>
+                        </div>
+                    </div>
+                </div>               
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<!-- Author: Julien Comtois -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:c="http://java.sun.com/jsp/jstl/core"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:a="http://xmlns.jcp.org/jsf/passthrough"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui" >
+    <f:view locale="#{localeAction.locale}">
+        <h:head>
+            <title>Bamboo Temple</title>
+            <h:outputStylesheet library="css" name="productList.css" />
+            <h:outputStylesheet library="css" name="style.css" />
+            <h:outputStylesheet library="css" name="bootstrap-theme.min.css" />
+            <h:outputStylesheet library="css" name="bootstrap.min.css" />
+            <h:outputScript library="js" name="bootstrap.min.js" />
+        </h:head>
+        <h:body class="formBody">
+            <div>
+                <nav class="navbar navbar-inverse">
+                    <div class="container-fluid">
+                        <!-- Brand and toggle get grouped for better mobile display -->
+                        <div class="navbar-header">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                                <span class="sr-only">#{msgs.ToggleNav}</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <h:link outcome="index"><span class="navbar-brand">Bamboo Temple</span></h:link>
+                        </div>
+
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                            <h:form class="navbar-form navbar-left" role="search">
+                                        <div class="form-group">
+                                            <h:selectOneMenu value="#{searchQuery.criteria}" class="form-control" id="criteria">
+                                                <f:selectItem itemValue="#{msgs.Title}" itemLabel="title" />
+                                                <f:selectItem itemValue="#{msgs.Author}" itemLabel="author" />
+                                                <f:selectItem itemValue="#{msgs.Publisher}" itemLabel="publisher" />
+                                                <f:selectItem itemValue="#{msgs.Description}" itemLabel="description" />
+                                                <f:selectItem itemValue="#{msgs.ISBN}" itemLabel="isbn" />
+                                            </h:selectOneMenu>                                 
+                                        </div>
+                                        <div class="form-group">
+                                            <h:inputText value="#{searchQuery.keyword}" class="form-control" a:placeholder="#{msgs.Search}" />
+                                        </div>
+                                        <!-- Spacer between search box and submit button -->
+                                        <h:commandButton value="#{msgs.Submit}" action="#{searchQuery.search()}"  class="btn btn-inverse" />
+                            </h:form> 
+                            <h:form>
+                                <ul class="nav navbar-nav navbar-right">
+                                    <li>
+                                        <h:commandLink value="#{msgs.Logout}" action="#{login.logout()}" rendered="#{not empty login.user}"/>
+                                    </li>
+                                    <li>
+                                        <h:commandLink value="#{msgs.Login}" action="login" rendered="#{empty login.user}"/>
+                                        <li><h:commandLink value="Hello #{login.user.fname}" action="userProfile" rendered="#{not empty login.user}"/></li>         
+                                        <li><h:commandLink value="My Books" action="library" rendered="#{not empty login.user}"/></li>         
+                                    </li>
+                                    <li><h:commandLink value="#{msgs.Registration}" action="registration"/></li>                       
+                                    <li>
+                                        <h:commandLink value="#{msgs.ShoppingCart}" action="shoppingCart"> 
+                                            <h:form rendered="#{shoppingCart.cartItems.size() != 0}">
+                                                #{shoppingCart.cartItems.size()} item(s)
+                                            </h:form>
+                                        </h:commandLink>
+                                    </li>
+                                    <li><h:commandLink value="#{msgs.FAQ}" action="faq"/></li>
+                                    <li><h:link value="#{msgs.Management}" outcome="management/users" rendered="#{login.user.isAdmin()}"/></li>
+                                    <li><h:commandLink value="#{localeAction.otherLanguage}" action="#{localeAction.setLanguage(localeAction.otherLocale)}"/></li> 
+                                    <li>
+                                        <div style="background-color: lightslategray; height: 50px; width: 50px;">
+                                            <h:commandLink action="#{redirectToHelpPage.setHelpPage(view.viewId)}"> 
+                                                <p:graphicImage name="icons/help_icon.jpg" height="50px" width="50px" />
+                                                
+                                            </h:commandLink>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </h:form>
+                        </div><!-- /.navbar-collapse -->
+                    </div><!-- /.container-fluid -->
+                </nav>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <div>
+                        <h:link outcome="index">
+                            <p:graphicImage class="full-width logo2" name="images/logo.jpg"/> 
+                        </h:link>
+                    </div>
+                    <br/>
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">
+                                #{msgs.BrowseGenre}
+                            </h3>
+                        </div>
+                        <div class="list-group">
+                            <!-- The preRenderView type represents an event that will occur
+          before the page is rendered. In this example that task is the manual
+          retrieval of a cookie. If a cookie is not found then a cookie is
+          created. Cookies must be written to the browser before any other
+          HTML is delivered and that is why it is a preRenderView. Cookies
+          can be read at any time because they are in the Response object. -->
+                            <f:metadata>
+                                <f:event type="preRenderView"
+                                         listener="#{preRenderViewBean.checkCookies}" />
+                            </f:metadata>
+                            <h:form>
+                                <ui:repeat value="#{inventoryDAOImpl.findAllGenres()}" var="item">
+                                    <h:commandLink value="#{item}" action="#{searchQuery.search()}" class="list-group-item full-width">
+                                        <!--                                        <f:param name="searchCriteria" value="Genre" />
+                                                                                <f:param name="searchKeyword" value="#{item}" />-->
+                                        <f:setPropertyActionListener target="#{searchQuery.criteria}" value="Genre"/>
+                                        <f:setPropertyActionListener target="#{searchQuery.keyword}" value="#{item}"/>
+                                    </h:commandLink>
+                                </ui:repeat>
+                            </h:form>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="panel panel-primary">
+
+                            <c:set var="survey" value="#{surveyDAOImpl.findInEffectSurvey()}"/>
+
+                            <div class="panel-heading">
+                                <h3 class="panel-title">
+                                    #{survey.question}
+                                </h3>
+                            </div>
+                            <div class="panel-body">
+                                <h:panelGroup id="survey">
+                                    <h:form rendered="#{currentSurvey.hasNotVoted}">
+                                        <h:panelGrid columns="1" style="margin-bottom:10px" cellpadding="5">
+                                            <p:selectOneRadio id="radios" value="#{currentSurvey.selected}" layout="pageDirection">
+                                                <f:selectItem itemLabel="#{survey.choice1}" itemValue="1" />
+                                                <f:selectItem itemLabel="#{survey.choice2}" itemValue="2" />
+                                                <f:selectItem itemLabel="#{survey.choice3}" itemValue="3" />
+                                                <f:selectItem itemLabel="#{survey.choice4}" itemValue="4" />
+                                                <f:selectItem itemLabel="#{survey.choice5}" itemValue="5" />
+                                            </p:selectOneRadio>
+                                        </h:panelGrid>
+                                        <h:commandButton value="#{msgs.Vote}" action="#{currentSurvey.submitSurvey}" class="btn btn-primary">
+                                            <f:ajax execute="@form" render=":survey" />
+                                        </h:commandButton>
+                                    </h:form>
+                                    <h:panelGroup rendered="#{currentSurvey.hasVoted}">
+                                        <p:chart type="pie" model="#{chartView.pieModel}"/>
+                                    </h:panelGroup>
+                                </h:panelGroup>
+                            </div>
+
+
+                        </div>
+                    </div>
+                    <div class = "panel panel-primary">
+                        <div class = "panel-heading">
+                            <h3 class = "panel-title">#{msgs.News}</h3>
+                        </div>
+                        <div class="panel-body">
+                            <iframe src="feed.xhtml"
+                                    border="0"
+                                    scrolling="yes"
+                                    allowtransparency="true"
+                                    width="100%"
+                                    height="400px"
+                                    style="border:0;"></iframe>
+                        </div>
+                    </div>
+                    <div style="width:100%; height:90px;">
+                        <iframe src="#{adDAOImpl.findInEffectAd().url}"
+                                border="0"
+                                scrolling="no"
+                                allowtransparency="true"
+                                width="100%"
+                                height="100%"
+                                style="border:0;"></iframe>
+                    </div>
+                </div>
+                <div class="col-md-10">
+                    <ui:insert name="content"></ui:insert>
+                </div>
+            </div>
+        </h:body>
+    </f:view>
+</html>

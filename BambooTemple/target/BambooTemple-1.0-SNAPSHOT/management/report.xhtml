@@ -1,0 +1,312 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:c="http://xmlns.jcp.org/jsp/jstl/core" >
+
+    <h:head>
+    </h:head>
+    <h:body>
+        <ui:composition template="./managementTemplate.xhtml">
+            <ui:define name="content">
+
+                <div class="container-fluid" >
+                    <div class = "panel panel-primary">
+                        <div class = "panel-heading">
+                            <h4 class = "panel-title">#{msgs.Report}</h4>
+                        </div>
+                        <div class = "panel-body">
+                            <h:form class="navbar-form navbar-left">
+                                <div class="container-fluid">
+                                    <div class="row">
+                                        <div >
+
+                                            <!--Radio button for reports-->
+                                            <p:outputPanel id="customPanel" style="margin-bottom: 10px">
+
+                                                <p:selectOneRadio id="customRadio" value="#{reportType.reporttype}" layout = "custom" >
+                                                    <f:selectItem itemLabel="Total Sales" itemValue="Total Sales" />
+                                                    <f:selectItem itemLabel="Top Sellers" itemValue="Top Sellers" />
+                                                    <f:selectItem itemLabel="Top Clients" itemValue="Top Clients" />
+                                                    <f:selectItem itemLabel="Zero Sales" itemValue="Zero Sales" />
+                                                    <f:selectItem itemLabel="Sales by Client" itemValue="Sales by Client" />
+                                                    <f:selectItem itemLabel="Sales by Author" itemValue="Sales by Author" />
+                                                    <f:selectItem itemLabel="Sales by Publisher" itemValue="Sales by Publisher" />
+                                                    <!--                                                    <f:ajax render="reports" />-->
+                                                </p:selectOneRadio>
+
+                                                <h:panelGrid columns="2" cellpadding="5" >
+                                                    <p:radioButton id="opt1" for="customRadio" itemIndex="0" />
+                                                    <h:outputLabel for="opt1" value="Total Sales" />
+                                                    <p:radioButton id="opt2" for=" customRadio" itemIndex="1" />
+                                                    <h:outputLabel for="opt2" value="Top Sellers" />
+                                                    <p:radioButton id="opt3" for="customRadio" itemIndex="2" />
+                                                    <h:outputLabel for="opt3" value="Top Clients" />
+                                                    <p:radioButton id="opt4" for="customRadio" itemIndex="3" />
+                                                    <h:outputLabel for="opt4" value="Zero Sales" />
+                                                </h:panelGrid>
+
+                                                <h:panelGrid columns="3" cellpadding="5">
+                                                    <p:radioButton id="opt5" for="customRadio" itemIndex="4" />
+                                                    <p:outputLabel for="opt5" value="Sales by Client" />           
+                                                    <p:selectOneMenu id="client" value="#{report.clientemail}" style="width:280px">
+                                                        <f:selectItem itemLabel="Select a client's email address" itemValue="" noSelectionOption="true" />
+                                                        <f:selectItems value="#{userDAOImpl.findAllEmails()}" />
+                                                    </p:selectOneMenu>
+
+                                                    <p:radioButton id="opt6" for="customRadio" itemIndex="5" />
+                                                    <h:outputLabel for="opt6" value="Sales by Author" />
+                                                    <p:selectOneMenu id="author" value="#{report.author}" style="width:280px">
+                                                        <f:selectItem itemLabel="Select an author" itemValue="" noSelectionOption="true" />
+                                                        <f:selectItems value="#{inventoryDAOImpl.findAuthors()}" />
+                                                    </p:selectOneMenu>
+
+                                                    <p:radioButton id="opt7" for="customRadio" itemIndex="6" />
+                                                    <h:outputLabel for="opt7" value="Sales by Publisher" />
+                                                    <p:selectOneMenu id="publisher" value="#{report.publisher}" style="width:280px">
+                                                        <f:selectItem itemLabel="Select a publisher" itemValue="" noSelectionOption="true" />
+                                                        <f:selectItems value="#{inventoryDAOImpl.findPublishers()}" />
+                                                    </p:selectOneMenu>
+                                                </h:panelGrid>
+
+                                                <!--Start/End dates-->
+                                                <h:panelGrid columns="3" cellpadding="5">
+                                                    <p:outputLabel for="startdate" value="#{msgs.Startdate}" />
+                                                    <p:calendar id="startdate" value="#{dateRange.startdate}" 
+                                                                pattern="yyyy-MM-dd"
+                                                                required="true" 	 
+                                                                requiredMessage="#{msgs.Required}"/>               
+                                                    <p:message for="startdate" >
+                                                        <h:outputText>
+                                                            <f:convertDateTime pattern="yyyy-MM-dd" />
+                                                        </h:outputText>
+                                                    </p:message>
+                                                </h:panelGrid>
+                                                <h:panelGrid id="moose" columns="4" cellpadding="5">
+                                                    <p:outputLabel for="enddate" value="#{msgs.Enddate}" />
+                                                    <p:calendar id="enddate" value="#{dateRange.enddate}" 
+                                                                pattern="yyyy-MM-dd"
+                                                                required="true" 	 
+                                                                requiredMessage="#{msgs.Required}" />
+                                                    <p:message for="enddate" >
+                                                        <h:outputText>
+                                                            <f:convertDateTime pattern="yyyy-MM-dd" />
+                                                        </h:outputText>
+                                                    </p:message>
+
+                                                </h:panelGrid>
+                                            </p:outputPanel>
+
+                                            <p:commandButton value="Submit" action="#{report.getReports()}" update="reports" >
+                                                <f:ajax execute="@form" render="@form" />
+                                            </p:commandButton> 
+
+                                            <p:separator  />
+
+                                            <p:message for="moose" rendered="#{dateRange.checkDaterange()}" >
+                                                <h:outputText value="#{msgs.WrongDateRange}" style="color: red" />
+                                            </p:message>
+
+                                            <!--Top Sellers-->                         
+                                            <h:panelGroup id="reports" >
+                                                <h3 style="font-weight: bold; color: darkgreen;">#{reportType.reporttype}</h3>
+                                                <p:dataTable  var="ts" value="#{report.topsellers}" rendered="#{reportType.reporttype == 'Top Sellers'}" reflow="true" rows="5" paginator="true" >
+                                                    <p:column headerText="Book title" colspan="2" >
+                                                        <h:outputText value="#{ts.title}" style="font-weight: bold"/>  
+                                                    </p:column>
+                                                    <p:column headerText="ISBN" >
+                                                        <h:outputText value="#{ts.ISBN}" style="font-weight: bold"/>  
+                                                    </p:column>
+                                                    <p:column headerText="Quantity">
+                                                        <div align="center">
+                                                            <h:outputText value="#{ts.qty}" style="font-weight: bold"/>
+                                                        </div>
+                                                    </p:column>
+                                                    <p:column headerText="Sales">
+                                                        <div align="center">
+                                                            <h:outputText value="#{ts.sales}" style="font-weight: bold; color: darkred">
+                                                                <f:convertNumber currencySymbol="$" type="currency"/>
+                                                            </h:outputText> 
+                                                        </div>
+                                                    </p:column>
+                                                    <p:column headerText="Cost">
+                                                        <div align="center">
+                                                            <h:outputText value="#{ts.cost}" style="font-weight: bold; color: darkred">
+                                                                <f:convertNumber currencySymbol="$" type="currency"/>
+                                                            </h:outputText>
+                                                        </div>
+                                                    </p:column>
+                                                    <p:column headerText="Profit">
+                                                        <div align="center">
+                                                            <h:outputText value="#{ts.profit}" style="font-weight: bold; color: darkred">
+                                                                <f:convertNumber currencySymbol="$" type="currency"/>
+                                                            </h:outputText>
+                                                        </div>
+                                                    </p:column>                                               
+                                                </p:dataTable>
+
+                                                <!--Top Clients-->
+                                                <p:dataTable  var="tc" value="#{report.topclients}" rendered="#{reportType.reporttype == 'Top Clients'}" reflow="true" rows="5" paginator="true"   >
+                                                    <p:column headerText="Client's email" colspan="2"  >
+                                                        <h:outputText value="#{tc.email}" style="font-weight: bold" />  
+                                                    </p:column>
+                                                    <p:column headerText="Client name">
+                                                        <h:outputText value="#{tc.name}" style="font-weight: bold"/>  
+                                                    </p:column>
+                                                    <p:column headerText="Purchase" style="text-align: center">
+                                                        <h:outputText value="#{tc.sales}" style="font-weight: bold; color: darkred">
+                                                            <f:convertNumber currencySymbol="$" type="currency"/>
+                                                        </h:outputText> 
+                                                    </p:column>
+                                                    <p:column headerText="Cost" style="text-align: center">
+                                                        <h:outputText value="#{tc.cost}" style="font-weight: bold; color: darkred">
+                                                            <f:convertNumber currencySymbol="$" type="currency"/>
+                                                        </h:outputText>
+                                                    </p:column>
+                                                    <p:column headerText="Profit" style="text-align: center">
+                                                        <h:outputText value="#{tc.profit}" style="font-weight: bold; color: darkred">
+                                                            <f:convertNumber currencySymbol="$" type="currency"/>
+                                                        </h:outputText> 
+                                                    </p:column>                                               
+                                                </p:dataTable>
+
+                                                <!--Zero Sales-->                                           
+                                                <p:dataTable  var="zs" value="#{report.zerosales}" rendered="#{reportType.reporttype == 'Zero Sales'}" reflow="true" rows="5" paginator="true"   >
+                                                    <p:column headerText="ISBN">
+                                                        <h:outputText value="#{zs.isbn}" style="font-weight: bold" />  
+                                                    </p:column>
+                                                    <p:column headerText="Book title" colspan="2">
+                                                        <h:outputText value="#{zs.title}" style="font-weight: bold"/>  
+                                                    </p:column>
+                                                    <p:column headerText="Author">
+                                                        <h:outputText value="#{zs.author}" style="font-weight: bold"/> 
+                                                    </p:column>
+                                                    <p:column headerText="Genre">
+                                                        <h:outputText value="#{zs.genre}" style="font-weight: bold"/>
+                                                    </p:column>
+                                                    <p:column headerText="Publisher">
+                                                        <h:outputText value="#{zs.publisher}" style="font-weight: bold"/> 
+                                                    </p:column>                                               
+                                                </p:dataTable>
+
+                                                <!--Sales by Client-->
+                                                <p:dataTable  var="sc" value="#{report.clientreport}" rendered="#{reportType.reporttype == 'Sales by Client'}" reflow="true" rows="1"   >
+                                                    <p:column headerText="Client's email" colspan="2">
+                                                        <h:outputText value="#{sc.email}" style="font-weight: bold" />  
+                                                    </p:column>
+                                                    <p:column headerText="Client's name">
+                                                        <h:outputText value="#{sc.name}" style="font-weight: bold"/>  
+                                                    </p:column>
+                                                    <p:column headerText="Purchase" style="text-align: center">
+                                                        <h:outputText value="#{sc.sales}" style="font-weight: bold; color: darkred">
+                                                            <f:convertNumber currencySymbol="$" type="currency"/>
+                                                        </h:outputText> 
+                                                    </p:column>
+                                                    <p:column headerText="Cost" style="text-align: center">
+                                                        <h:outputText value="#{sc.cost}" style="font-weight: bold; color: darkred">
+                                                            <f:convertNumber currencySymbol="$" type="currency"/>
+                                                        </h:outputText>
+                                                    </p:column>
+                                                    <p:column headerText="Profit" style="text-align: center">
+                                                        <h:outputText value="#{sc.profit}" style="font-weight: bold; color: darkred">
+                                                            <f:convertNumber currencySymbol="$" type="currency"/>
+                                                        </h:outputText> 
+                                                    </p:column>                                               
+                                                </p:dataTable>
+
+                                                <!--Sales by Author-->
+                                                <p:dataTable  var="sa" value="#{report.authorreport}" rendered="#{reportType.reporttype == 'Sales by Author'}" reflow="true" rows="1"   >
+                                                    <p:column headerText="Author" >
+                                                        <h:outputText value="#{report.author}" style="font-weight: bold" />  
+                                                    </p:column>
+                                                    <p:column headerText="Book sold" style="text-align: center">
+                                                        <h:outputText value="#{sa.quantity}" style="font-weight: bold"/>  
+                                                    </p:column>
+                                                    <p:column headerText="Sales" style="text-align: center" >
+                                                        <h:outputText value="#{sa.sales}" style="font-weight: bold; color: darkred">
+                                                            <f:convertNumber currencySymbol="$" type="currency"/>
+                                                        </h:outputText>
+                                                    </p:column>
+                                                    <p:column headerText="Cost" style="text-align: center" >
+                                                        <h:outputText value="#{sa.cost}" style="font-weight: bold; color: darkred">
+                                                            <f:convertNumber currencySymbol="$" type="currency"/>
+                                                        </h:outputText>
+                                                    </p:column>
+                                                    <p:column headerText="Profit" style="text-align: center">
+                                                        <h:outputText value="#{sa.profit}" style="font-weight: bold; color: darkred">
+                                                            <f:convertNumber currencySymbol="$" type="currency"/>
+                                                        </h:outputText>
+                                                    </p:column>                                               
+                                                </p:dataTable>
+
+                                                <!--Sales by Publisher-->
+                                                <p:dataTable  var="sp" value="#{report.publisherreport}" rendered="#{reportType.reporttype == 'Sales by Publisher'}" reflow="true" rows="1"   >
+                                                    <p:column headerText="Publisher" >
+                                                        <h:outputText value="#{report.publisher}" style="font-weight: bold" />  
+                                                    </p:column>
+                                                    <p:column headerText="Book sold" style="text-align: center" >
+                                                        <h:outputText value="#{sp.quantity}" style="font-weight: bold"/>  
+                                                    </p:column>
+                                                    <p:column headerText="Sales" style="text-align: center" >
+                                                        <h:outputText value="#{sp.sales}" style="font-weight: bold; color: darkred">
+                                                            <f:convertNumber currencySymbol="$" type="currency"/>
+                                                        </h:outputText>
+                                                    </p:column>
+                                                    <p:column headerText="Cost" style="text-align: center" >
+                                                        <h:outputText value="#{sp.cost}" style="font-weight: bold; color: darkred">
+                                                            <f:convertNumber currencySymbol="$" type="currency"/>
+                                                        </h:outputText>
+                                                    </p:column>
+                                                    <p:column headerText="Profit" style="text-align: center" >
+                                                        <h:outputText value="#{sp.profit}" style="font-weight: bold; color: darkred">
+                                                            <f:convertNumber currencySymbol="$" type="currency"/>
+                                                        </h:outputText>
+                                                    </p:column>                                               
+                                                </p:dataTable>
+
+                                                <!--Total Sales-->
+                                                <p:dataTable  var="ts" value="#{report.totalsales}" rendered="#{reportType.reporttype == 'Total Sales'}" reflow="true" rows="1"   >
+                                                    <p:column headerText="Total sales" >
+                                                        <div align="center">
+                                                            <h:outputText value="#{ts.sales}" style="font-weight: bold; color: darkred" >
+                                                                <f:convertNumber currencySymbol="$" type="currency"/>
+                                                            </h:outputText>
+                                                        </div>
+                                                    </p:column>
+                                                    <p:column headerText="Total cost" >
+                                                        <div align="center">
+                                                            <h:outputText value="#{ts.cost}" style="font-weight: bold; color: darkred" >
+                                                                <f:convertNumber currencySymbol="$" type="currency"/>
+                                                            </h:outputText>
+                                                        </div>
+                                                    </p:column>
+                                                    <p:column headerText="Total profit" >
+                                                        <div align="center">
+                                                            <h:outputText value="#{ts.profit}" style="font-weight: bold; color: darkred">
+                                                                <f:convertNumber currencySymbol="$" type="currency"/>
+                                                            </h:outputText> 
+                                                        </div>
+                                                    </p:column> 
+                                                    <p:column headerText="Total books sold" >
+                                                        <div align="center">
+                                                            <h:outputText value="#{ts.qty}" style="font-weight: bold"/> 
+                                                        </div>
+                                                    </p:column>   
+                                                </p:dataTable>
+                                            </h:panelGroup>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </h:form> 
+                        </div>
+                    </div>
+                </div>
+
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

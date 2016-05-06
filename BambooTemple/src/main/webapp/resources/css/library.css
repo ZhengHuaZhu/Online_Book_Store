@@ -1,0 +1,20 @@
+/* 
+    Created on : Apr 10, 2016, 11:23:15 PM
+    Author     : Marjo
+*/
+
+/* Normal Styles */
+h4 { font-size: 36px; }
+h4 { font-size: 16px; }
+
+
+
+/* Mobile styles */
+@media only screen and (max-width: 480px) {
+    h4 {
+        font-size: 14px;
+    }
+    h1{
+       font-size: 18px;
+    }
+}
